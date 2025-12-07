@@ -66,7 +66,27 @@ namespace App.Application.Services.EmployeeSalaries
 			{
 				return ResponseModel.Error($"حدث خطأ أثناء الحذف: {ex.Message}");
 			}
-		}		
+		}
+
+		public async Task<IResponseModel> EditAsync(CreateSalary dto, CancellationToken ct = default)
+		{
+			try
+			{
+				if (dto == null)
+					return ResponseModel.Error("البيانات المرسلة غير صحيحة.", 400);
+				var entity = dto.Adapt<Domain.Models.Salaries.EmployeeSalaries>();
+				entity.Id= dto.SalaryId.Value;	
+
+
+				Update(entity, userId: "system");
+
+				return ResponseModel.Success("تم تعديل راتب الموظف بنجاح", entity);
+			}
+			catch (Exception ex)
+			{
+				return ResponseModel.Error($"حدث خطأ أثناء إضافة راتب الموظف: {ex.Message}");
+			}
+		}
 
 		public async Task<IResponseModel> GetSalariesAsync(Guid? employeeId = null, int? month = null, int? year = null, CancellationToken ct = default)
 		{

@@ -52,6 +52,26 @@ namespace App.MVC.Controllers
 		}
 
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> EditSalaries(CreateSalary model, CancellationToken ct)
+		{
+			if (!ModelState.IsValid)
+			{
+
+				return View(model);
+			}
+
+
+			var createResult = await _ApiPoster.EditEmpSalaryAsync("EmployeesSalary", model, ct);
+
+			TempData["ToastMessage"] = "تم تعديل الراتب بنجاح";
+			return RedirectToAction("EditSalaries");
+
+
+		}
+
+
 
 
 		[HttpGet]
