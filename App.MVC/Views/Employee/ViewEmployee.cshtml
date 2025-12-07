@@ -1,0 +1,129 @@
+﻿
+
+<div class="container" dir="rtl" style="font-family: Tahoma, Arial, sans-serif;">
+
+
+@Html.Partial("_HeaderStyle")
+@Html.Partial("_HeaderStyleSearchEmp")
+
+
+    <div class="emp-head" dir="rtl">
+        <div class="center-text">
+            <div class="title">نظام إدارة بيانات نادي الفجر الثقافي</div>
+            <div class="subtitle">وحدة إدارة بيانات الموظفين</div>
+        </div>
+    </div>
+
+
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center" style="color:#b22222; margin:12px 0;">وحدة الموظفين/قائمة الموظفين</h4>
+            <hr style="border-top:3px solid #d19; margin-top: -6px;">
+        </div>
+    </div>
+    </div>
+
+<div class="emp-range-widget" dir="rtl" style="font-family: Tahoma, Arial, sans-serif; margin:10px 0;">
+  
+
+    <div class="erw-row1">
+        <div class="erw-employee">
+            <input type="text" id="searchInput" placeholder="اسم أو رقم تليفون الموظف" />
+        </div>
+        <div class="erw-btns">
+            <button type="button" class="erw-btn">انتهاء الاقامة</button>
+            <button type="button" class="erw-btn yellow">خلال 30 يوم</button>
+        </div>
+
+       
+    </div>
+
+    <div class="erw-row2">
+
+        <!-- RIGHT SIDE: title + date fields (ALL TO THE RIGHT) -->
+        <div class="erw-right-group">
+
+            <div class="erw-title">تاريخ انتهاء الهوية</div>
+
+            <div class="erw-date-group">
+                <label>من</label>
+                <input type="date" id="fromDate" />
+            </div>
+
+            <div class="erw-date-group">
+                <label>الى</label>
+                <input type="date" id="toDate" />
+            </div>
+
+        </div>
+
+        <!-- LEFT SIDE: buttons + small date -->
+        <div class="erw-left-group" style="display:flex; align-items:center; gap:8px;">
+            <div class="erw-actions">
+                <button type="button" id="refreshBtn" class="erw-action"> رفريش</button>
+                <button type="button" id="searchBtn" class="erw-action">بحث </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="rounded shadow-sm p-3" id="PartialNewListContainer">
+
+                <!-- Page Size Selector -->
+               @*  <nav class="d-flex justify-content-end align-items-center gap-2 my-2">
+                    <label class="form-label mb-0" for="pageSizeSelect">عدد السجلات</label>
+
+                    <select id="pageSizeSelect" name="pageSize" class="form-select form-select-sm w-auto" style="width:74px;">
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="150">150</option>
+                    </select>
+                </nav> *@
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 70px !important;">الاسم</th>
+                                <th style="min-width: 70px !important;">الوظيفة</th>
+                                <th style="min-width: 70px !important;">رقم الهوية</th>
+                                <th style="min-width: 70px !important;">الراتب</th>
+                                <th style="min-width: 70px !important;">تاريخ انتهاء الهوية</th>
+                                <th style="min-width: 70px !important;">رقم الهاتف</th>
+                               
+@*                                 <th>أدوات التحكم</th>
+ *@                            </tr>
+                        </thead>
+
+                        <!-- EMPTY BODY (JS fills it dynamically) -->
+                        <tbody></tbody>
+
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="d-flex justify-content-center align-items-center flex-wrap mt-3">
+                    <ul class="pagination my-1"></ul>
+                </nav>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("_DataTable")
+
+
+
+
+
+
+
+

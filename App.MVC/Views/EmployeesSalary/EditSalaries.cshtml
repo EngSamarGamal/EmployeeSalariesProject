@@ -1,0 +1,322 @@
+﻿@using App.Common.Dtos.Models.API.Salaries
+@model CreateSalary
+
+
+@{
+    ViewData["Title"] = "Add Edit Salary";
+    var employeesList = ViewBag.Employees as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    Guid? selectedEmployeeId = Model?.EmployeeId;
+    int selectedMonth = Model?.Month ?? 0; 
+    int selectedYear = Model?.year ?? DateTime.Now.Year;
+    int startYear = DateTime.Now.Year - 5;
+    int endYear = DateTime.Now.Year + 1;
+}
+
+<div class="container" dir="rtl" style="font-family: Tahoma, Arial, sans-serif;">
+    @Html.Partial("_HeaderStyle")
+
+    <div class="emp-head" dir="rtl">
+        <div class="center-text">
+            <div class="title">نظام إدارة بيانات نادي الفجر الثقافي</div>
+            <div class="subtitle">وحدة إدارة الرواتب و الاجور</div>
+        </div>
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center" style="color:#b22222; margin:12px 0;">وحدة إدارة الرواتب و الاجور / تعديل الراتب</h4>
+            <hr style="border-top:3px solid #d19; margin-top: -6px;">
+        </div>
+    </div>
+
+    <form asp-action="AddSalaries" method="post" novalidate>
+        <input asp-for="SalaryId" id="SalaryId" type="hidden" />
+
+        @Html.AntiForgeryToken()
+        @if (TempData["ToastMessage"] != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 99999;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @TempData["ToastMessage"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <partial name="_ValidationScriptsPartial" />
+
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <label class="form-label">الموظف</label>
+
+                <select asp-for="EmployeeId" id="employeeSelect" class="form-control" data-selected="@(Model?.EmployeeId.ToString() ?? "")">
+                    <option value="">اختر الموظف</option>
+                </select>
+
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <label class="form-label">الشهر</label>
+                <select asp-for="Month" id="monthSelect" name="Month" class="form-control">
+                    <option value="">اختر الشهر</option>
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        var monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m);
+                        <option value="@m" selected="@(m == selectedMonth ? "selected" : null)">@monthName</option>
+                    }
+                </select>
+                <span asp-validation-for="Month" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <label class="form-label">السنة</label>
+                <select asp-for="year" id="yearSelect" name="Year" class="form-control">
+                    <option value="">اختر السنة</option>
+                    @for (int y = startYear; y <= endYear; y++)
+                    {
+                        <option value="@y" selected="@(y == selectedYear ? "selected" : null)">@y</option>
+                    }
+                </select>
+                <span asp-validation-for="year" class="text-danger"></span>
+            </div>
+        </div>
+
+     
+
+        <!-- job (readonly) -->
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الوظيفة</label>
+            <input asp-for="job" id="jobField" class="form-control" readonly />
+            <span asp-validation-for="job" class="text-danger"></span>
+        </div>
+
+        <!-- باقي الحقول مع spans للرسائل -->
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الأساسي الشهري</label>
+            <input asp-for="BasicSalary" id="basicSalary" class="form-control" readonly />
+            <span asp-validation-for="BasicSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">قيمة البدلات</label>
+            <input asp-for="Allowances" class="form-control" id="allowances" onkeydown="calcNet(event)" />
+            <span asp-validation-for="Allowances" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">إجمالي الراتب</label>
+            <input asp-for="TotalSalary" class="form-control" id="netSalary" readonly />
+            <span asp-validation-for="TotalSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">ايام العمل</label>
+            <input asp-for="WorkDays" class="form-control" id="workDays" value="30" />
+            <span asp-validation-for="WorkDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">ايام الغياب</label>
+            <input asp-for="AbsentDays" class="form-control" id="AbsentDays" onkeydown="calcAbsentDays(event)" />
+            <span asp-validation-for="AbsentDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الإجازات المرضية(Days)</label>
+            <input asp-for="SickLeaveDays" class="form-control" id="SickLeaveDays" />
+            <span asp-validation-for="SickLeaveDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الإجازة السنوية(Days)</label>
+            <input asp-for="AnnualLeaveDays" class="form-control" id="AnnualLeaveDays" />
+            <span asp-validation-for="AnnualLeaveDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">مجموع الخصم</label>
+            <input asp-for="TotalDeductions" class="form-control" id="totalDeductions" />
+            <span asp-validation-for="TotalDeductions" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">مهام ومكافآت</label>
+            <input asp-for="TasksAndRewards" class="form-control" id="tasksAndRewards" onkeydown="calcFinalSalary(event)" />
+            <span asp-validation-for="TasksAndRewards" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">صافي الراتب</label>
+            <input asp-for="FinalSalary" class="form-control" id="FinalSalary" readonly />
+            <span asp-validation-for="FinalSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mt-3 text-center">
+            <button type="submit" class="btn btn-primary px-5">تعديل</button>
+        </div>
+    </form>
+
+    <div id="salarySlipContainer" class="mt-3"></div>
+
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+
+            form.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault(); // stop form submit
+                    return false;
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // API endpoint (user-provided)
+          const apiUrl = "http://localhost:7037/api/Employee/GetAllEmp";
+
+          // element references
+          const employeeSelect = document.getElementById('employeeSelect');
+          const jobField = document.getElementById('jobField');
+          const basicSalaryField = document.getElementById('basicSalary');
+
+          // Helper - escape HTML to avoid injection when building option strings
+          function escapeHtml(str) {
+            if (str === null || str === undefined) return "";
+            return String(str)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;");
+          }
+
+          if (!employeeSelect) {
+            console.error("employeeSelect element not found.");
+            return;
+          }
+
+          async function loadEmployees() {
+            employeeSelect.innerHTML = `<option value="">جاري التحميل...</option>`;
+            try {
+              const res = await fetch(apiUrl, { credentials: 'include' }); // keep credentials if auth via cookies
+              if (!res.ok) {
+                console.error("Failed to fetch employees:", res.status, res.statusText);
+                employeeSelect.innerHTML = `<option value="">فشل تحميل الموظفين (${res.status})</option>`;
+                return;
+              }
+
+              const json = await res.json();
+              // adjust to API shape: try common shapes
+              const list = json.result ?? json.data ?? json;
+              if (!Array.isArray(list) || list.length === 0) {
+                employeeSelect.innerHTML = `<option value="">لا يوجد موظفين</option>`;
+                return;
+              }
+
+              // read server-selected id passed via data-selected attribute (from Razor Model)
+              const serverSelected = (employeeSelect.dataset && employeeSelect.dataset.selected) ? employeeSelect.dataset.selected.trim() : "";
+
+              // normalize to string for matching
+              const selectedNormalized = serverSelected ? serverSelected.replace(/[{}]/g, "").toLowerCase() : "";
+
+              // convert to array of normalized objects
+              const mapped = list.map(emp => {
+                const id = (emp.employeeId ?? emp.EmployeeId ?? emp.id ?? "").toString();
+                return {
+                  raw: emp,
+                  id: id,
+                  idNormalized: id.replace(/[{}]/g, "").toLowerCase(),
+                  name: (emp.fullName ?? emp.FullName ?? emp.name ?? "—").toString(),
+                  job: (emp.job ?? emp.Job ?? "").toString(),
+                  base: (emp.baseSalary ?? emp.BaseSalary ?? emp.baseSalary ?? "").toString()
+                };
+              });
+
+              // If server-selected found, move that employee to the front of the array
+              if (selectedNormalized) {
+                const idx = mapped.findIndex(x => x.idNormalized === selectedNormalized);
+                if (idx > 0) {
+                  const [selItem] = mapped.splice(idx, 1);
+                  mapped.unshift(selItem);
+                } else if (idx === -1) {
+                  // not found — optionally keep list as-is, but we log a warning
+                  console.warn("Selected employee id from server not found in API list:", serverSelected);
+                }
+              }
+
+              // Build options: ensure the first option is the selected employee (if any)
+              const options = [];
+              options.push(`<option value="">اختر الموظف</option>`);
+              mapped.forEach((m, index) => {
+                // mark the first mapped item as selected if it matches serverSelected, or if serverSelected was not provided, no selection
+                let selectedAttr = "";
+                if (selectedNormalized && index === 0 && mapped[0].idNormalized === selectedNormalized) {
+                  selectedAttr = ' selected';
+                } else if (!selectedNormalized && false) {
+                  // no default selection if server hasn't provided one
+                }
+                options.push(`<option value="${escapeHtml(m.id)}" data-job="${escapeHtml(m.job)}" data-basesalary="${escapeHtml(m.base)}"${selectedAttr}>${escapeHtml(m.name)}</option>`);
+              });
+
+              employeeSelect.innerHTML = options.join("");
+
+              // After building, if serverSelected was provided, ensure it's selected (safety)
+              if (selectedNormalized) {
+                // Try direct assignment first
+                employeeSelect.value = serverSelected;
+                if (employeeSelect.value !== serverSelected) {
+                  // fallback: find by normalized match
+                  for (let i = 0; i < employeeSelect.options.length; i++) {
+                    const optVal = (employeeSelect.options[i].value || "").replace(/[{}]/g, "").toLowerCase();
+                    if (optVal === selectedNormalized) {
+                      employeeSelect.selectedIndex = i;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              // Trigger change to populate job & base salary fields
+              employeeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+            } catch (err) {
+              console.error("Error loading employees:", err);
+              employeeSelect.innerHTML = `<option value="">فشل تحميل الموظفين</option>`;
+            }
+          }
+
+          // fill job & basic fields when selection changes
+          employeeSelect.addEventListener('change', function () {
+            const opt = employeeSelect.options[employeeSelect.selectedIndex];
+            const job = opt?.dataset?.job ?? "";
+            const base = opt?.dataset?.basesalary ?? "";
+            if (jobField) jobField.value = job;
+            if (basicSalaryField) basicSalaryField.value = base;
+          });
+
+          // run loader
+          loadEmployees();
+        });
+    </script>
+
+ 
+
+    @Html.Partial("Partial/_GetBasicSalary")
+    @Html.Partial("Partial/_calcAbsentDays")
+    @Html.Partial("Partial/_calcFinalSalary")
+
+
+
+}
+
+
+

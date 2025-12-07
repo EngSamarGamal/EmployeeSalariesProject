@@ -1,0 +1,177 @@
+﻿@using App.Common.Dtos.Models.API.Salaries
+@model CreateSalary
+
+
+@{
+    ViewData["Title"] = "Add Edit Salary";
+    var employees = ViewBag.Employees as IEnumerable<dynamic>;
+}
+
+<div class="container" dir="rtl" style="font-family: Tahoma, Arial, sans-serif;">
+    @Html.Partial("_HeaderStyle")
+
+    <div class="emp-head" dir="rtl">
+        <div class="center-text">
+            <div class="title">نظام إدارة بيانات نادي الفجر الثقافي</div>
+            <div class="subtitle">وحدة إدارة الرواتب و الاجور</div>
+        </div>
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center" style="color:#b22222; margin:12px 0;">وحدة إدارة الرواتب و الاجور / اضافة الراتب</h4>
+            <hr style="border-top:3px solid #d19; margin-top: -6px;">
+        </div>
+    </div>
+
+    <form asp-action="AddSalaries" method="post" novalidate>
+
+        @Html.AntiForgeryToken()
+        @if (TempData["ToastMessage"] != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 99999;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @TempData["ToastMessage"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <partial name="_ValidationScriptsPartial" />
+           
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <label class="form-label">الموظف</label>
+
+                <select asp-for="EmployeeId" id="employeeSelect" class="form-control">
+                    <option value="">جاري التحميل...</option>
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <label class="form-label">الشهر</label>
+                @* تأكدي أن الخاصية في الموديل اسمها Month (PascalCase) *@
+                <select asp-for="Month" id="monthSelect" name="Month" class="form-control">
+                </select>
+                <span asp-validation-for="Month" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-2">
+                <label class="form-label">السنة</label>
+                @* إذا في الموديل الخاصية اسمها Year استخدمي Year وليس year *@
+                <select asp-for="year" id="yearSelect" name="Year" class="form-control">
+                </select>
+                <span asp-validation-for="year" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- job (readonly) -->
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الوظيفة</label>
+            <input asp-for="job" id="jobField" class="form-control" readonly />
+            <span asp-validation-for="job" class="text-danger"></span>
+        </div>
+
+        <!-- باقي الحقول مع spans للرسائل -->
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الأساسي الشهري</label>
+            <input asp-for="BasicSalary" id="basicSalary" class="form-control" readonly />
+            <span asp-validation-for="BasicSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">قيمة البدلات</label>
+            <input asp-for="Allowances" class="form-control" id="allowances" onkeydown="calcNet(event)" />
+            <span asp-validation-for="Allowances" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">إجمالي الراتب</label>
+            <input asp-for="TotalSalary" class="form-control" id="netSalary" readonly />
+            <span asp-validation-for="TotalSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">ايام العمل</label>
+            <input asp-for="WorkDays" class="form-control" id="workDays" value="30" />
+            <span asp-validation-for="WorkDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">ايام الغياب</label>
+            <input asp-for="AbsentDays" class="form-control" id="AbsentDays" onkeydown="calcAbsentDays(event)" />
+            <span asp-validation-for="AbsentDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الإجازات المرضية(Days)</label>
+            <input asp-for="SickLeaveDays" class="form-control" id="SickLeaveDays" />
+            <span asp-validation-for="SickLeaveDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">الإجازة السنوية(Days)</label>
+            <input asp-for="AnnualLeaveDays" class="form-control" id="AnnualLeaveDays" />
+            <span asp-validation-for="AnnualLeaveDays" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">مجموع الخصم</label>
+            <input asp-for="TotalDeductions" class="form-control" id="totalDeductions" />
+            <span asp-validation-for="TotalDeductions" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">مهام ومكافآت</label>
+            <input asp-for="TasksAndRewards" class="form-control" id="tasksAndRewards" onkeydown="calcFinalSalary(event)" />
+            <span asp-validation-for="TasksAndRewards" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mb-2">
+            <label class="form-label">صافي الراتب</label>
+            <input asp-for="FinalSalary" class="form-control" id="FinalSalary" readonly />
+            <span asp-validation-for="FinalSalary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12 mt-3 text-center">
+            <button type="submit" class="btn btn-primary px-5">حفظ</button>
+        </div>
+    </form>
+
+    <div id="salarySlipContainer" class="mt-3"></div>
+
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+
+            form.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault(); // stop form submit
+                    return false;
+                }
+            });
+        });
+    </script>
+ 
+
+
+
+    @Html.Partial("Partial/_GetEmployee")
+    @Html.Partial("Partial/_GetBasicSalary")
+    @Html.Partial("Partial/_calcAbsentDays")
+    @Html.Partial("Partial/_calcFinalSalary")
+
+
+
+}
+
+
+

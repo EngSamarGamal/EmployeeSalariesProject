@@ -1,0 +1,165 @@
+{
+    "QuestionRequired": "السؤال مطلوب.",
+    "AnswerRequired": "الإجابة مطلوبة.",
+
+    "DataCreatedSuccessfully": "تم إنشاء البيانات بنجاح",
+    "ErrorWhileCreatingData": "حدث خطأ أثناء إنشاء البيانات",
+
+    "DataFetchedSuccessfully": "تم جلب البيانات بنجاح",
+    "RequestCancelled": "تم إلغاء الطلب",
+    "ErrorWhileFetching": "حدث خطأ أثناء جلب البيانات",
+
+    "DescriptionAr": "حقل الوصف بالعربية مطلوب",
+    "DescriptionEn": "حقل الوصف بالإنجليزية مطلوب",
+    "FileUrl": "يجب تحميل الملف أو تقديم رابط للملف",
+    "UploadFailed": "حدث خطأ أثناء رفع الملف، الملف غير صالح",
+    "UploadSuccess": "تم تحميل الملف بنجاح",
+
+    "EmailRequired": "البريد الإلكتروني مطلوب",
+    "EmailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+
+    "NameEnglishRequired": "يجب إدخال الاسم باللغة الإنجليزية.",
+    "NameArabicRequired": "يجب إدخال الاسم باللغة العربية.",
+    "DocumentTypeRequired": "يجب تحديد نوع المستند.",
+    "DescriptionEnglishTooLong": "الوصف باللغة الإنجليزية أطول من المسموح.",
+    "DescriptionArabicTooLong": "الوصف باللغة العربية أطول من المسموح.",
+    "FileOrUrlRequired": "يجب عليك رفع ملف أو تقديم رابط للملف.",
+    "InvalidType": "نوع غير صالح",
+    "NotFound": "البيانات غير موجودة",
+
+    "DataDeletedSuccessfully": "تم حذف البيانات بنجاح",
+    "DataUpdatedSuccessfully": "تم تعديل البيانات بنجاح",
+    "ErrorWhileDeletingData": "حدث خطأ أثناء حذف البيانات",
+    "ErrorWhileUpdatingData": "حدث خطأ أثناء تعديل البيانات",
+
+    "DeveloperCreatedSuccessfully": "تم إنشاء المطور بنجاح.",
+    "DeveloperUpdatedSuccessfully": "تم تحديث المطور بنجاح.",
+    "DeveloperDeletedSuccessfully": "تم حذف المطور بنجاح.",
+    "ErrorWhileCreating": "حدث خطأ أثناء إنشاء المطور.",
+    "ErrorWhileUpdating": "حدث خطأ أثناء تحديث المطور.",
+    "ErrorWhileDeleting": "حدث خطأ أثناء حذف المطور.",
+
+    "MaxLength150": "الحد الأقصى للطول 150 حرفًا.",
+    "MaxLength1000": "الحد الأقصى للطول 1000 حرفًا.",
+    "MaxImageSize5MB": "يجب ألا يتجاوز حجم الصورة 5 ميجابايت.",
+    "InvalidImageType": "نوع الصورة غير صالح. الأنواع المسموح بها: png, jpeg, jpg, ico, svg.",
+    "MaxLength200": "الحد الأقصى للطول 200 حرفًا.",
+    "MaxLength2000": "الحد الأقصى للطول 2000 حرفًا.",
+    "MaxLength100": "الحد الأقصى للطول 100 حرفًا.",
+
+    "PropertiesRetrievedSuccess": "تم جلب العقارات بنجاح.",
+    "UnexpectedError": "حدث خطأ غير متوقع أثناء جلب العقارات.",
+
+    "PropertyCreated": "تم إنشاء العقار بنجاح.",
+    "PropertyUpdated": "تم تحديث العقار بنجاح.",
+    "PropertyDeleted": "تم حذف العقار بنجاح.",
+    "PropertyNotFound": "لم يتم العثور على العقار المطلوب.",
+
+    "InvalidFilter": "معايير التصفية المدخلة غير صحيحة.",
+    "NameEnglishAlphanumeric": "الاسم بالإنجليزية يجب أن يحتوي أحرفًا وأرقامًا فقط.",
+    "NameArabicAlphanumeric": "الاسم بالعربية يجب أن يحتوي أحرفًا عربية أو أرقامًا فقط.",
+    "AboutEnglishRequired": "الوصف بالإنجليزية مطلوب.",
+    "AboutArabicRequired": "الوصف بالعربية مطلوب.",
+    "CoverPhotoRequired": "صورة الغلاف مطلوبة.",
+    "CoverPhotoInvalid": "يجب أن تكون صورة الغلاف JPG أو PNG أو SVG وبحد أقصى 5 ميجابايت.",
+
+    "TotalSharesGreaterThan0": "إجمالي الأسهم يجب أن يكون أكبر من 0.",
+    "UnitPriceGreaterThan0": "سعر الوحدة يجب أن يكون أكبر من 0.",
+    "InvalidExitStrategy": "استراتيجية الخروج غير صحيحة.",
+    "DownPaymentPercentRange": "نسبة الدفعة الأولى يجب أن تكون بين 0 و100.",
+    "PlanDurationGreaterThan0": "مدة الخطة بالأشهر يجب أن تكون أكبر من 0.",
+    "MaintenanceFeesNonNegative": "رسوم الصيانة لا يمكن أن تكون سالبة.",
+    "InvalidInvestmentModel": "نموذج الاستثمار غير صالح.",
+    "InvalidInstallmentFrequency": "تكرار الأقساط غير صالح.",
+
+    "CityRequired": "المدينة مطلوبة.",
+    "AreaRequired": "المنطقة مطلوبة.",
+    "DeveloperRequired": "المطور مطلوب.",
+    "CityNotFound": "المدينة المحددة غير موجودة.",
+    "AreaNotFound": "المنطقة المحددة غير موجودة.",
+    "DeveloperNotFound": "المطور المحدد غير موجود.",
+
+    "PropertyCreatedSuccessfully": "تم إنشاء العقار بنجاح.",
+    "PropertyRetrievedSuccessfully": "تم استرجاع بيانات العقار بنجاح.",
+    "PropertyDeletedSuccessfully": "تم حذف العقار بنجاح.",
+
+    "DuplicatePropertyPrice": "يوجد سعر عقار بنفس التاريخ والوقت والقيمة بالفعل.",
+    "PropertyPriceCreatedSuccessfully": "تم إنشاء سعر العقار بنجاح.",
+    "PropertyPricesRetrievedSuccessfully": "تم استرجاع أسعار العقارات بنجاح.",
+    "PropertyPriceRetrievedSuccessfully": "تم استرجاع سعر العقار بنجاح.",
+    "PropertyPriceNotFound": "لم يتم العثور على سعر العقار.",
+    "PropertyPriceDeletedSuccessfully": "تم حذف سعر العقار بنجاح.",
+
+    "CannotDeleteDeveloperWithProperties": "لا يمكن حذف هذا المطور لأنه مرتبط بعقارات.",
+
+    "InvalidDateFormat": "صيغة التاريخ غير صحيحة. يرجى استخدام dd-MM-yyyy.",
+    "PageNumberMustBeGreaterThanZero": "رقم الصفحة يجب أن يكون أكبر من صفر.",
+    "InvalidPageSize": "عدد العناصر في الصفحة يجب أن يكون بين 1 و 200.",
+    "InvalidDateRange": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.",
+
+    "SocialCreatedSuccessfully": "تم إنشاء وسيلة التواصل الاجتماعي بنجاح.",
+    "SocialUpdatedSuccessfully": "تم تحديث وسيلة التواصل الاجتماعي بنجاح.",
+    "SocialDeletedSuccessfully": "تم حذف وسيلة التواصل الاجتماعي بنجاح.",
+
+    "NameEnRequired": "الاسم باللغة الإنجليزية مطلوب.",
+    "NameArRequired": "الاسم باللغة العربية مطلوب.",
+    "UrlRequired": "رابط الموقع مطلوب.",
+    "InvalidUrlFormat": "يجب أن يبدأ الرابط بـ http:// أو https:// أو www.",
+    "MaxSize5MB": "يجب ألا يتجاوز حجم الملف 5 ميجابايت.",
+
+    "InvestorGuidelineCreatedSuccessfully": "تم إنشاء دليل المستثمر بنجاح.",
+    "InvestorGuidelineUpdatedSuccessfully": "تم تحديث دليل المستثمر بنجاح.",
+    "InvestorGuidelineDeletedSuccessfully": "تم حذف دليل المستثمر بنجاح.",
+    "InvestorGuidelineNotFound": "دليل المستثمر المطلوب غير موجود.",
+
+    "TitleEnRequired": "عنوان اللغة الإنجليزية مطلوب.",
+    "TitleArRequired": "عنوان اللغة العربية مطلوب.",
+    "MaxLength5000": "الحد الأقصى للطول هو 5000 حرفًا.",
+    "MaxLength100ForReadTime": "يجب ألا يتجاوز وقت القراءة 100 حرف.",
+
+    "privacyPolicyCreatedSuccessfully": "تم إنشاء سياسة الخصوصية بنجاح",
+    "PrivacyPolicyEnglishRequired": "يجب ألا يكون محتوى سياسة الخصوصية باللغة الإنجليزية فارغًا",
+    "PrivacyPolicyArabicRequired": "يجب ألا يكون محتوى سياسة الخصوصية باللغة العربية فارغًا",
+    "privacyPolicyNotFound": "سياسة الخصوصية غير موجودة",
+    "privacyPolicyUpdatedSuccessfully": "تم تحديث سياسة الخصوصية بنجاح",
+    "privacyPolicyAlreadyExists": "يوجد سياسة خصوصية بالفعل",
+
+    "ContactUsAlreadyExists": "تم إدخال بيانات التواصل مسبقًا.",
+    "ContactUsCreatedSuccessfully": "تم إنشاء بيانات التواصل بنجاح.",
+    "ContactUsUpdatedSuccessfully": "تم تحديث بيانات التواصل بنجاح.",
+
+    "ChatTimeEnglishRequired": "وقت المحادثة (بالإنجليزية) مطلوب.",
+    "ChatTimeArabicRequired": "وقت المحادثة (بالعربية) مطلوب",
+    "ChatPhoneRequired": "رقم هاتف المحادثة مطلوب",
+
+    "PhoneCallRequired": "رقم المكالمة الهاتفية مطلوب",
+    "PhoneTimeEnglishRequired": "وقت المكالمة الهاتفية (بالإنجليزية) مطلوب",
+    "PhoneTimeArabicRequired": "وقت المكالمة الهاتفية (بالعربية) مطلوب",
+
+    "EmailTimeEnglishRequired": "وقت الرد على البريد الإلكتروني (بالإنجليزية) مطلوب",
+    "EmailTimeArabicRequired": "وقت الرد على البريد الإلكتروني (بالعربية) مطلوب",
+
+    "EstimatedROIRequired": "عائد الاستثمار المتوقع مطلوب.",
+    "PercentageRange": "يجب أن تكون القيمة بين 0 و 100.",
+
+    "GrowthExitROI_NotAllowed_Flip": "عائد الخروج للنمو غير مسموح به في نموذج Flip.",
+    "RentalExitROI_NotAllowed_Flip": "عائد الخروج للإيجار غير مسموح به في نموذج Flip.",
+    "ExpectedRentalDate_NotAllowed_Flip": "لا يسمح بتاريخ الإيجار المتوقع في نموذج Flip.",
+    "ExitDate_NotAllowed_Flip": "لا يسمح بتاريخ الخروج في نموذج Flip.",
+
+    "RentalExitROI_Required_Rental": "عائد الإيجار مطلوب في نموذج Rental.",
+    "ExpectedRentalDate_Required_Rental": "تاريخ الإيجار المتوقع مطلوب في نموذج Rental.",
+    "GrowthExitROI_NotAllowed_Rental": "عائد النمو غير مسموح به في نموذج Rental.",
+
+    "GrowthExitROI_Required_Growth": "عائد النمو مطلوب في نموذج Growth.",
+    "RentalExitROI_NotAllowed_Growth": "عائد الإيجار غير مسموح به في نموذج Growth.",
+    "ExpectedRentalDate_NotAllowed_Growth": "لا يسمح بتاريخ الإيجار المتوقع في نموذج Growth.",
+
+    "RentalExitROI_NotAllowed_QuickGain": "عائد الإيجار غير مسموح به في نموذج Quick Gain.",
+    "ExpectedRentalDate_NotAllowed_QuickGain": "تاريخ بدء الإيجار غير مسموح في نموذج Quick Gain.",
+    "GrowthExitROI_NotAllowed_QuickGain": "عائد النمو غير مسموح به في نموذج Quick Gain.",
+
+    "RentalExitROI_Required_SteadyGrowth": "عائد الإيجار مطلوب في نموذج Steady Growth.",
+    "ExpectedRentalDate_Required_SteadyGrowth": "تاريخ بدء الإيجار مطلوب في نموذج Steady Growth.",
+    "GrowthExitROI_Required_SteadyGrowth": "عائد الخروج من النمو مطلوب في نموذج Steady Growth."
+}

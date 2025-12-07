@@ -1,0 +1,99 @@
+﻿<script>
+    /* English comments per your preference */
+
+    // Config
+    const apiUrl = "http://localhost:7037/api/Employee/GetAllEmp";
+
+    // DOM refs
+    const employeeSelect = document.getElementById("employeeSelect");
+    const basicSalaryInput = document.getElementById("basicSalary");
+    const jobField = document.getElementById("jobField");
+    const monthSelect = document.getElementById("monthSelect");
+    const yearSelect = document.getElementById("yearSelect");
+
+    // 1) Populate months (Arabic names)
+    (function fillMonths() {
+      const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+      const now = new Date();
+      monthSelect.innerHTML = months.map((m, i) => {
+        const selected = (i === now.getMonth()) ? 'selected' : '';
+        return `<option value="${i+1}" ${selected}>${m}</option>`;
+      }).join("");
+    })();
+
+    // 2) Populate years from 1087 to 2030 (inclusive)
+    (function fillYears() {
+      const start = 1087;
+      const end = 2030;
+      const nowYear = new Date().getFullYear();
+      let opts = "";
+      for (let y = start; y <= end; y++) {
+        const selected = (y === nowYear) ? 'selected' : '';
+        opts += `<option value="${y}" ${selected}>${y}</option>`;
+      }
+      yearSelect.innerHTML = opts;
+    })();
+
+    // Utility to escape HTML
+    function escapeHtml(text) {
+      if (text === null || text === undefined) return "";
+      return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+                         .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    }
+
+    // 3) Load employees from API and populate select (text = fullName only)
+    async function loadEmployees() {
+      try {
+        employeeSelect.innerHTML = `<option value="">جاري التحميل...</option>`;
+        const res = await fetch(apiUrl, { credentials: 'include' });
+        if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+        const json = await res.json();
+        const list = json.result || [];
+
+        if (!Array.isArray(list) || list.length === 0) {
+          employeeSelect.innerHTML = `<option value="">لا يوجد موظفين</option>`;
+          return;
+        }
+
+        // build options: show fullName only, keep data-job and data-basesalary attributes
+        const options = [`<option value="">اختر الموظف</option>`];
+        list.forEach(emp => {
+          const id = emp.employeeId || "";
+          const name = emp.fullName || "—";
+          const job = emp.job || ""; // uses job from json
+          const base = (emp.baseSalary !== undefined && emp.baseSalary !== null) ? emp.baseSalary : "";
+          options.push(`<option value="${escapeHtml(id)}" data-job="${escapeHtml(job)}" data-basesalary="${escapeHtml(base)}">${escapeHtml(name)}</option>`);
+        });
+
+        employeeSelect.innerHTML = options.join("");
+      } catch (err) {
+        console.error("Error loading employees:", err);
+        employeeSelect.innerHTML = `<option value="">فشل تحميل الموظفين</option>`;
+      }
+    }
+
+    // 4) On employee change: fill job and basic salary; keep salary right-aligned
+    employeeSelect.addEventListener('change', function () {
+      const opt = employeeSelect.selectedOptions[0];
+      if (!opt || !opt.value) {
+        jobField.value = "";
+        basicSalaryInput.value = "";
+        basicSalaryInput.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+
+      const job = opt.getAttribute('data-job') || "";
+      const base = opt.getAttribute('data-basesalary') || "";
+
+      jobField.value = job;
+      // put base as number (no formatting) and keep caret on the right due to text-end
+      basicSalaryInput.value = base !== "" ? Number(base) : "";
+      // trigger input event so any other calc (net salary) updates
+      basicSalaryInput.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    // initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadEmployees();
+    });
+</script>

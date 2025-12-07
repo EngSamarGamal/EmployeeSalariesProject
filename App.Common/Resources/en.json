@@ -1,0 +1,168 @@
+{
+    "QuestionRequired": "Question is required.",
+    "AnswerRequired": "Answer is required.",
+
+    "DataCreatedSuccessfully": "Data created successfully.",
+    "ErrorWhileCreatingData": "An error occurred while creating the data.",
+
+    "DataFetchedSuccessfully": "Data fetched successfully.",
+    "RequestCancelled": "Request cancelled.",
+    "ErrorWhileFetching": "An error occurred while fetching data.",
+
+    "DescriptionAr": "Arabic description field is required.",
+    "DescriptionEn": "English description field is required.",
+    "FileUrl": "File must be uploaded before saving.",
+    "UploadFailed": "An error occurred while uploading the file. The file is invalid.",
+    "EmailRequired": "Email is required.",
+    "EmailInvalid": "Please enter a valid email address.",
+
+    "InvalidDateRegular": "Cannot enter data related to the regular context.",
+    "InvalidDateLisence": "Cannot enter data related to licenses.",
+    "InvalidDateSteps": "Cannot enter data related to steps.",
+    "UploadSuccess": "File is Uploaded Succesfully",
+
+    "NameEnglishRequired": "Name (English) is required.",
+    "NameArabicRequired": "Name (Arabic) is required.",
+    "DocumentTypeRequired": "Document type is required.",
+    "DescriptionEnglishTooLong": "Description (English) is too long.",
+    "DescriptionArabicTooLong": "Description (Arabic) is too long.",
+    "FileOrUrlRequired": "You must upload a file or provide a file URL.",
+    "InvalidType": "Invalid type.",
+    "NotFound": "Data not found.",
+
+    "DataDeletedSuccessfully": "Data deleted successfully.",
+    "DataUpdatedSuccessfully": "Data updated successfully.",
+    "ErrorWhileDeletingData": "An error occurred while deleting data.",
+    "ErrorWhileUpdatingData": "An error occurred while updating data.",
+
+    "DeveloperCreatedSuccessfully": "Developer created successfully.",
+    "DeveloperUpdatedSuccessfully": "Developer updated successfully.",
+    "DeveloperDeletedSuccessfully": "Developer deleted successfully.",
+    "ErrorWhileCreating": "An error occurred while creating the developer.",
+    "ErrorWhileUpdating": "An error occurred while updating the developer.",
+    "ErrorWhileDeleting": "An error occurred while deleting the developer.",
+
+    "MaxLength150": "Maximum length is 150 characters.",
+    "MaxLength1000": "Maximum length is 1000 characters.",
+    "MaxImageSize5MB": "Image size must not exceed 5 MB.",
+    "InvalidImageType": "Invalid image type. Allowed: png, jpeg, jpg, ico, svg.",
+    "MaxLength200": "Maximum length is 200 characters.",
+    "MaxLength2000": "Maximum length is 2000 characters.",
+    "MaxLength100": "Maximum length is 100 characters.",
+
+    "PropertiesRetrievedSuccess": "Properties retrieved successfully.",
+    "UnexpectedError": "An unexpected error occurred while retrieving properties.",
+
+    "PropertyCreated": "Property created successfully.",
+    "PropertyUpdated": "Property updated successfully.",
+    "PropertyDeleted": "Property deleted successfully.",
+    "PropertyNotFound": "The requested property was not found.",
+
+    "InvalidFilter": "The provided filter parameters are invalid.",
+    "NameEnglishAlphanumeric": "Name (English) must contain only letters and numbers.",
+    "NameArabicAlphanumeric": "Name (Arabic) must contain only Arabic letters or numbers.",
+    "AboutEnglishRequired": "About (English) is required.",
+    "AboutArabicRequired": "About (Arabic) is required.",
+    "CoverPhotoRequired": "Cover photo is required.",
+    "CoverPhotoInvalid": "Cover photo must be JPG, PNG, or SVG and not exceed 5 MB.",
+
+    "TotalSharesGreaterThan0": "Total shares must be greater than 0.",
+    "UnitPriceGreaterThan0": "Unit price must be greater than 0.",
+    "InvalidExitStrategy": "Invalid exit strategy.",
+    "DownPaymentPercentRange": "Down payment percentage must be between 0 and 100.",
+    "PlanDurationGreaterThan0": "Plan duration (months) must be greater than 0.",
+    "MaintenanceFeesNonNegative": "Maintenance fees cannot be negative.",
+    "InvalidInvestmentModel": "Invalid investment model.",
+    "InvalidInstallmentFrequency": "Invalid installment frequency.",
+
+    "CityRequired": "City is required.",
+    "AreaRequired": "Area is required.",
+    "DeveloperRequired": "Developer is required.",
+    "CityNotFound": "The specified city does not exist.",
+    "AreaNotFound": "The specified area does not exist.",
+    "DeveloperNotFound": "The specified developer does not exist.",
+
+    "PropertyCreatedSuccessfully": "Property created successfully.",
+    "PropertyRetrievedSuccessfully": "Property retrieved successfully.",
+    "PropertyDeletedSuccessfully": "Property deleted successfully.",
+
+    "DuplicatePropertyPrice": "A property price with the same date, time, and amount already exists.",
+    "PropertyPriceCreatedSuccessfully": "Property price created successfully.",
+    "PropertyPricesRetrievedSuccessfully": "Property prices retrieved successfully.",
+    "PropertyPriceRetrievedSuccessfully": "Property price retrieved successfully.",
+    "PropertyPriceNotFound": "Property price not found.",
+    "PropertyPriceDeletedSuccessfully": "Property price deleted successfully.",
+
+    "CannotDeleteDeveloperWithProperties": "Cannot delete this developer because it is associated with properties.",
+
+    "InvalidDateFormat": "Invalid date format. Please use dd-MM-yyyy.",
+    "PageNumberMustBeGreaterThanZero": "Page number must be greater than zero.",
+    "InvalidPageSize": "Page size must be between 1 and 200.",
+    "InvalidDateRange": "The start date cannot be after the end date.",
+
+    "SocialCreatedSuccessfully": "Social media entry created successfully.",
+    "SocialUpdatedSuccessfully": "Social media entry updated successfully.",
+    "SocialDeletedSuccessfully": "Social media entry deleted successfully.",
+
+    "NameEnRequired": "English name is required.",
+    "NameArRequired": "Arabic name is required.",
+    "UrlRequired": "URL is required.",
+    "InvalidUrlFormat": "URL must start with http://, https://, or www.",
+    "MaxSize5MB": "File size must not exceed 5 MB.",
+
+    "InvestorGuidelineCreatedSuccessfully": "Investor guideline created successfully.",
+    "InvestorGuidelineUpdatedSuccessfully": "Investor guideline updated successfully.",
+    "InvestorGuidelineDeletedSuccessfully": "Investor guideline deleted successfully.",
+    "InvestorGuidelineNotFound": "Investor guideline not found.",
+
+    "TitleEnRequired": "English title is required.",
+    "TitleArRequired": "Arabic title is required.",
+    "MaxLength5000": "Maximum length is 5000 characters.",
+    "MaxLength100ForReadTime": "Read time must not exceed 100 characters.",
+
+    "PrivacyPolicyCreatedSuccessfully": "Privacy policy created successfully.",
+    "PrivacyPolicyEnglishRequired": "Privacy policy content (English) cannot be empty.",
+    "PrivacyPolicyArabicRequired": "Privacy policy content (Arabic) cannot be empty.",
+    "PrivacyPolicyNotFound": "Privacy policy not found.",
+    "PrivacyPolicyUpdatedSuccessfully": "Privacy policy updated successfully.",
+    "PrivacyPolicyAlreadyExists": "An active privacy policy already exists.",
+
+    "ContactUsAlreadyExists": "Contact information already exists.",
+    "ContactUsCreatedSuccessfully": "Contact information created successfully.",
+    "ContactUsUpdatedSuccessfully": "Contact information updated successfully.",
+
+    "ChatTimeEnglishRequired": "Chat time (English) is required.",
+    "ChatTimeArabicRequired": "Chat time (Arabic) is required.",
+    "ChatPhoneRequired": "Chat phone number is required.",
+
+    "PhoneCallRequired": "Phone call number is required.",
+    "PhoneTimeEnglishRequired": "Phone call time (English) is required.",
+    "PhoneTimeArabicRequired": "Phone call time (Arabic) is required.",
+
+    "EmailTimeEnglishRequired": "Email response time (English) is required.",
+    "EmailTimeArabicRequired": "Email response time (Arabic) is required.",
+
+    "EstimatedROIRequired": "Estimated ROI is required.",
+    "PercentageRange": "Value must be between 0 and 100.",
+
+    "GrowthExitROI_NotAllowed_Flip": "Growth Exit ROI is not allowed for the Flip model.",
+    "RentalExitROI_NotAllowed_Flip": "Rental Exit ROI is not allowed for the Flip model.",
+    "ExpectedRentalDate_NotAllowed_Flip": "Expected rental date is not allowed for the Flip model.",
+    "ExitDate_NotAllowed_Flip": "Exit date is not allowed for the Flip model.",
+
+    "RentalExitROI_Required_Rental": "Rental Exit ROI is required for the Rental model.",
+    "ExpectedRentalDate_Required_Rental": "Expected rental date is required for the Rental model.",
+    "GrowthExitROI_NotAllowed_Rental": "Growth Exit ROI is not allowed for the Rental model.",
+
+    "GrowthExitROI_Required_Growth": "Growth Exit ROI is required for the Growth model.",
+    "RentalExitROI_NotAllowed_Growth": "Rental Exit ROI is not allowed for the Growth model.",
+    "ExpectedRentalDate_NotAllowed_Growth": "Expected rental date is not allowed for the Growth model.",
+
+    "RentalExitROI_NotAllowed_QuickGain": "Rental Exit ROI is not allowed for the Quick Gain model.",
+    "ExpectedRentalDate_NotAllowed_QuickGain": "Expected rental date is not allowed for the Quick Gain model.",
+    "GrowthExitROI_NotAllowed_QuickGain": "Growth Exit ROI is not allowed for the Quick Gain model.",
+
+    "RentalExitROI_Required_SteadyGrowth": "Rental Exit ROI is required for the Steady Growth model.",
+    "ExpectedRentalDate_Required_SteadyGrowth": "Expected rental date is required for the Steady Growth model.",
+    "GrowthExitROI_Required_SteadyGrowth": "Growth Exit ROI is required for the Steady Growth model."
+}

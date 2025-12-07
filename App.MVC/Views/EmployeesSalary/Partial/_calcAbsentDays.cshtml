@@ -1,0 +1,40 @@
+﻿<script>
+    function calcAbsentDays(e) {
+        // guard: make sure we have an event and key is Enter (some browsers/mobile may not provide .key)
+        if (!e || (e.key && e.key !== "Enter")) return;
+
+        // prevent default only when Enter pressed
+        try {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        } catch {}
+
+        // get elements safely
+        const basicEl = document.getElementById("basicSalary");
+        const allowancesEl = document.getElementById("allowances");
+        const absentEl = document.getElementById("AbsentDays");
+        const totalBox = document.getElementById("totalDeductions");
+
+        // debug if any required element missing
+        if (!basicEl || !absentEl || !totalBox) {
+            console.error("calcAbsentDays: missing element", {
+                basicElExists: !!basicEl,
+                allowancesElExists: !!allowancesEl,
+                absentElExists: !!absentEl,
+                totalBoxExists: !!totalBox
+            });
+            return;
+        }
+
+        const basic = parseFloat(basicEl.value) || 0;
+        const allowances = parseFloat(allowancesEl?.value) || 0;
+        const totalSalary = basic + allowances;
+        const dayRate = totalSalary / 30;
+        const absent = parseFloat(absentEl.value) || 0;
+        const total = dayRate * absent;
+
+        totalBox.value = total.toFixed(2);
+    }
+</script>

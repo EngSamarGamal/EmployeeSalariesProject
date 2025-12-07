@@ -1,0 +1,284 @@
+﻿<script id="employee-grid-script"
+        data-api-base="http://localhost:7037/api/Employee/paginated"
+        defer>
+    (() => {
+      // config
+      const scriptEl = document.getElementById("employee-grid-script");
+      const apiBase = scriptEl?.getAttribute("data-api-base") || "/api/Employee/paginated";
+
+      // DOM refs
+      const tbody = document.querySelector("#PartialNewListContainer table tbody");
+      const pageSizeSelect = document.getElementById("pageSizeSelect") || document.querySelector("[name='pageSize']");
+      const paginationContainer = document.querySelector("#PartialNewListContainer .pagination");
+
+      const searchInput = document.getElementById("searchInput")
+        || document.querySelector("input[placeholder*='اسم']")
+        || document.querySelector(".erw-employee input");
+
+      const fromDate = document.getElementById("fromDate") || (document.querySelectorAll("input[type='date']")[0] || null);
+      const toDate = document.getElementById("toDate") || (document.querySelectorAll("input[type='date']")[1] || null);
+
+      const searchBtn = document.getElementById("searchBtn") || document.querySelector(".erw-action#searchBtn");
+      const refreshBtn = document.getElementById("refreshBtn") || null;
+
+      // state
+      let state = {
+        pageNumber: 1,
+        pageSize: parseInt(pageSizeSelect?.value || "50", 10) || 50,
+        totalCount: 0,
+        totalPages: 0,
+        lastItems: [],        // last loaded page items from server
+        dateFilterActive: false, // true if user pressed "بحث" for dates
+        textFilter: ""        // current live text filter
+      };
+
+      // utils
+      function escapeHtml(text) {
+        if (text === null || text === undefined) return "";
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+        const d = new Date(dateString);
+        if (isNaN(d)) return "-";
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      function formatNumber(n) {
+        if (n === null || n === undefined || n === "") return "-";
+        return Number(n).toLocaleString();
+      }
+
+      // render rows (ONLY the columns you requested)
+      function renderRows(items) {
+        tbody.innerHTML = "";
+        state.lastItems = items || [];
+
+        if (!items || items.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center">لا توجد سجلات</td></tr>`;
+          return;
+        }
+
+        items.forEach((emp, idx) => {
+          const fullName = emp.fullName || "-";
+          const jobTitle = emp.jobTitle || "-";
+          const nationalIdNumber = emp.nationalIdNumber || "-";
+          const salary = Number(emp.salary) || 0;
+          const idExpiry = emp.nationalIdExpiry || emp.passportExpiry || "";
+          const phone = emp.phoneNumber || "-";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td data-label="الاسم" style="cursor:pointer;"><span class="text-decoration-underline">${escapeHtml(fullName)}</span></td>
+            <td data-label="الوظيفة">${escapeHtml(jobTitle)}</td>
+            <td data-label="رقم الهوية">${escapeHtml(nationalIdNumber)}</td>
+            <td data-label="الراتب">${formatNumber(salary)}</td>
+            <td data-label="تاريخ انتهاء الهوية">${escapeHtml(formatDate(idExpiry))}</td>
+            <td data-label="رقم الهاتف">${escapeHtml(phone)}</td>
+           
+          `;
+          tr.dataset.employeeNumber = emp.employeeNumber || "";
+          tbody.appendChild(tr);
+        });
+      }
+
+      // pagination rendering
+      function renderPagination() {
+        const totalPages = state.totalPages;
+        const current = state.pageNumber;
+        paginationContainer.innerHTML = "";
+
+        const prevLi = document.createElement("li");
+        prevLi.className = "page-item " + (current === 1 ? "disabled" : "");
+        prevLi.innerHTML = `<a href="javascript:void(0)" class="page-link">Previous</a>`;
+        prevLi.addEventListener("click", () => { if (state.pageNumber > 1) loadPage(state.pageNumber - 1); });
+        paginationContainer.appendChild(prevLi);
+
+        const maxButtons = 5;
+        let start = Math.max(1, current - Math.floor(maxButtons / 2));
+        let end = Math.min(state.totalPages, start + maxButtons - 1);
+        if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+
+        for (let p = start; p <= end; p++) {
+          const li = document.createElement("li");
+          li.className = "page-item " + (p === current ? "active" : "");
+          li.innerHTML = `<a href="javascript:void(0)" class="page-link">${p}</a>`;
+          li.addEventListener("click", () => loadPage(p));
+          paginationContainer.appendChild(li);
+        }
+
+        const nextLi = document.createElement("li");
+        nextLi.className = "page-item " + (current === state.totalPages ? "disabled" : "");
+        nextLi.innerHTML = `<a href="javascript:void(0)" class="page-link">Next</a>`;
+        nextLi.addEventListener("click", () => { if (state.pageNumber < state.totalPages) loadPage(state.pageNumber + 1); });
+        paginationContainer.appendChild(nextLi);
+      }
+
+      // load page from API (regular load; resets dateFilterActive only when refresh is used)
+      async function loadPage(pageNumber = 1) {
+        state.pageNumber = pageNumber;
+        // regular load does not change text filter; does not clear searchInput
+        const url = new URL(apiBase, window.location.origin);
+        url.searchParams.set("pageNumber", state.pageNumber);
+        url.searchParams.set("pageSize", state.pageSize);
+
+        try {
+          const res = await fetch(url.toString(), { method: "GET", credentials: "include" });
+          if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
+          const json = await res.json();
+
+          const payload = json.result || json;
+          const items = payload.result || [];
+          state.totalCount = payload.totalCount || items.length;
+          state.totalPages = Math.max(1, Math.ceil((state.totalCount || items.length) / state.pageSize));
+
+          // Render and then apply any live text filter (so typing stays applied)
+          renderRows(items);
+
+          // If there's a live text filter, apply it immediately (keeps name filter intact after loading)
+          if (state.textFilter && state.textFilter.trim() !== "") {
+            applySearchFilters({ keepDateFlag: true, reRenderFrom: true });
+          } else {
+            // Only show pagination if not filtered by text/date
+            if (!state.dateFilterActive) renderPagination();
+            else paginationContainer.innerHTML = "";
+          }
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          tbody.innerHTML = `<tr><td colspan="7" class="text-danger">حدث خطأ أثناء تحميل البيانات</td></tr>`;
+          paginationContainer.innerHTML = "";
+        }
+      }
+
+      // Apply filters:
+      // - live text filter always (from searchInput.value)
+      // - date filter only when state.dateFilterActive === true (i.e., user pressed "بحث")
+      // options.keepDateFlag: if true, keep current state.dateFilterActive as-is
+      // options.reRenderFrom: true if we need to re-filter the current state.lastItems after reloading
+      function applySearchFilters(options = {}) {
+        const { keepDateFlag = false, reRenderFrom = false } = options;
+        // read current text filter from DOM (live)
+        state.textFilter = searchInput ? (searchInput.value || "").trim().toLowerCase() : "";
+
+        // work on the current items (last loaded page)
+        let filtered = Array.isArray(state.lastItems) ? [...state.lastItems] : [];
+
+        // text filter (name or phone or employeeNumber) — live, no button press required
+        if (state.textFilter) {
+          filtered = filtered.filter(emp =>
+            (emp.fullName && emp.fullName.toLowerCase().includes(state.textFilter)) ||
+            (emp.phoneNumber && String(emp.phoneNumber).includes(state.textFilter)) ||
+            (emp.employeeNumber && String(emp.employeeNumber).toLowerCase().includes(state.textFilter))
+          );
+        }
+
+        // date filter applies only if state.dateFilterActive is true
+        if (state.dateFilterActive) {
+          const fromVal = fromDate ? fromDate.value : "";
+          const toVal = toDate ? toDate.value : "";
+          const from = fromVal ? new Date(fromVal) : null;
+          const to = toVal ? new Date(toVal) : null;
+
+          if (from || to) {
+            filtered = filtered.filter(emp => {
+              const expiryVal = emp.nationalIdExpiry || emp.passportExpiry || null;
+              if (!expiryVal) return false;
+              const expiry = new Date(expiryVal);
+              if (isNaN(expiry)) return false;
+              if (from && expiry < from) return false;
+              if (to && expiry > to) return false;
+              return true;
+            });
+          } else {
+            // if dateFilterActive but fields empty => show nothing (user pressed search without dates)
+            filtered = [];
+          }
+        }
+
+        // render filtered results & hide pagination while any filter applied
+        const anyFilter = (state.textFilter && state.textFilter !== "") || state.dateFilterActive;
+        renderRows(filtered);
+        if (!anyFilter) {
+          // no filters => show pagination normally
+          renderPagination();
+        } else {
+          paginationContainer.innerHTML = "";
+        }
+      }
+
+      // Wire events:
+
+      // Live text search while typing (no clearing)
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          // update state.textFilter and apply filters immediately
+          state.textFilter = (searchInput.value || "").trim().toLowerCase();
+          applySearchFilters();
+        });
+      }
+
+      // Search button: only toggles/applies date filter (does NOT clear text input).
+      if (searchBtn) {
+        searchBtn.addEventListener("click", () => {
+          // toggle dateFilterActive ON (explicit apply). If you want toggle off on second click, adjust here.
+          state.dateFilterActive = true;
+          applySearchFilters();
+        });
+      }
+
+      // Refresh button: reload page data from server, keep text input intact, clear date filters
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+          // clear date filters but keep text filter
+          state.dateFilterActive = false;
+          if (fromDate) fromDate.value = "";
+          if (toDate) toDate.value = "";
+          // reload current page from API (will re-apply text filter after load)
+          loadPage(state.pageNumber);
+        });
+      }
+
+      // If page size changed: reset to page 1 and reload (keep text filter and dateFilterActive as-is)
+      if (pageSizeSelect) {
+        pageSizeSelect.addEventListener("change", (e) => {
+          state.pageSize = parseInt(e.target.value, 10) || 50;
+          state.pageNumber = 1;
+          loadPage(1);
+        });
+      }
+
+      // edit/delete delegation (uses state.lastItems indexes)
+      // tbody.addEventListener("click", (e) => {
+      //   const editBtn = e.target.closest(".edit-btn");
+      //   const delBtn = e.target.closest(".delete-btn");
+
+      //   if (editBtn) {
+      //     const idx = Number(editBtn.dataset.index);
+      //     const emp = state.lastItems[idx];
+      //     if (emp) {
+      //       alert(`Edit: ${emp.fullName || emp.employeeNumber || "unknown"}`);
+      //     }
+      //   } else if (delBtn) {
+      //     const idx = Number(delBtn.dataset.index);
+      //     const emp = state.lastItems[idx];
+      //     if (emp && confirm("هل تريد حذف هذا السجل؟")) {
+      //       // TODO: call delete API then reload rows
+      //       alert(`Delete requested for ${emp.fullName || emp.employeeNumber || "unknown"}`);
+      //     }
+      //   }
+      // });
+
+      // initial load when DOM ready
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPage(state.pageNumber);
+      });
+
+    })();
+</script>

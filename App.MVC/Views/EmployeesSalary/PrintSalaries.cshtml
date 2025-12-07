@@ -1,0 +1,201 @@
+﻿@{
+    Layout = null;
+    <!-- صفحة طباعة بدون لياوت -->
+}
+
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>طباعة الرواتب</title>
+    @Html.Partial("_PrintStyle")
+
+</head>
+
+
+<body>
+
+    <h2 id="titleHeader"></h2>
+
+    <div id="printTableContainer">جارِ تحميل البيانات...</div>
+
+    <script>
+        const qs = new URLSearchParams(window.location.search);
+        const employeeId = qs.get("employeeId");
+        const month = qs.get("month");
+        const year = qs.get("year");
+
+        const api = "http://localhost:7037/api/EmployeesSalary/GetAllEmpSalary";
+
+        const title = document.getElementById("titleHeader");
+
+        title.textContent = `كشف رواتب نادي الفجر الثقافي عن ${month || ''} / ${year || ''}`;
+
+        // helper: convert to number safely
+        function toNum(v) {
+            if (v === null || v === undefined || v === "") return 0;
+            const n = Number(v);
+            return isNaN(n) ? 0 : n;
+        }
+
+        // helper: format number to 2 decimals with thousands (optional)
+        function fmt(v) {
+            const n = toNum(v);
+            return n.toFixed(2);
+            // if you want thousands separators, use:
+            // return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        async function loadPrintData() {
+            try {
+                let url = api + "?";
+
+                if (employeeId) url += `employeeId=${employeeId}&`;
+                if (month) url += `month=${month}&`;
+                if (year) url += `year=${year}`;
+
+                const res = await fetch(url);
+                const json = await res.json();
+                const list = json.result || [];
+
+                // totals accumulator
+                const totals = {
+                    basicSalary: 0,
+                    allowances: 0,
+                    totalSalary: 0,
+                    workDays: 0,
+                    absentDays: 0,
+                    sickLeaveDays: 0,
+                    annualLeaveDays: 0,
+                    totalDeductions: 0,
+                    tasksAndRewards: 0,
+                    netSalary: 0
+                };
+
+                let html = `<table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الوظيفة</th>
+                            <th>الأساسي الشهري</th>
+                            <th>البدلات</th>
+                            <th>إجمالي الراتب</th>
+                            <th>أيام العمل</th>
+                            <th>أيام الغياب</th>
+                            <th>المرضية</th>
+                            <th>السنوية</th>
+                            <th>مجموع الخصم</th>
+                            <th>مهام ومكافآت</th>
+                            <th>صافي الراتب</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                list.forEach(s => {
+                    // safe reads
+                    const basic = toNum(s.basicSalary ?? s.BasicSalary);
+                    const allowances = toNum(s.allowances ?? s.Allowances);
+                    const totalSalary = toNum(s.totalSalary ?? s.TotalSalary);
+                    const workDays = toNum(s.workDays ?? s.WorkDays);
+                    const absent = toNum(s.absentDays ?? s.AbsentDays);
+                    const sick = toNum(s.sickLeaveDays ?? s.SickLeaveDays);
+                    const annual = toNum(s.annualLeaveDays ?? s.AnnualLeaveDays);
+                    const deductions = toNum(s.totalDeductions ?? s.TotalDeductions);
+                    const tasks = toNum(s.tasksAndRewards ?? s.TasksAndRewards);
+                    const net = toNum(s.netSalary ?? s.NetSalary ?? (totalSalary - deductions + tasks));
+
+                    // accumulate
+                    totals.basicSalary += basic;
+                    totals.allowances += allowances;
+                    totals.totalSalary += totalSalary;
+                    totals.workDays += workDays;
+                    totals.absentDays += absent;
+                    totals.sickLeaveDays += sick;
+                    totals.annualLeaveDays += annual;
+                    totals.totalDeductions += deductions;
+                    totals.tasksAndRewards += tasks;
+                    totals.netSalary += net;
+
+                    // row
+                    const empName = (s.employee && (s.employee.fullName ?? s.employee.fullNameAr)) ?? (s.fullName ?? "");
+                    const empJob = (s.employee && (s.employee.jobTitle ?? s.employee.job)) ?? (s.job ?? "");
+
+                    html += `<tr>
+                        <td>${empName}</td>
+                        <td>${empJob}</td>
+                        <td style="text-align:right">${fmt(basic)}</td>
+                        <td style="text-align:right">${fmt(allowances)}</td>
+                        <td style="text-align:right">${fmt(totalSalary)}</td>
+                        <td style="text-align:center">${workDays}</td>
+                        <td style="text-align:center">${absent}</td>
+                        <td style="text-align:center">${sick}</td>
+                        <td style="text-align:center">${annual}</td>
+                        <td style="text-align:right">${fmt(deductions)}</td>
+                        <td style="text-align:right">${fmt(tasks)}</td>
+                        <td style="text-align:right">${fmt(net)}</td>
+                    </tr>`;
+                });
+
+                html += `</tbody>`;
+
+                // add footer totals row
+                html += `<tfoot>
+                    <tr>
+                        <td colspan="2" style="text-align:right; font-weight:bold">الإجمالي</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.basicSalary)}</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.allowances)}</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.totalSalary)}</td>
+                        <td style="text-align:center; font-weight:bold">${totals.workDays}</td>
+                        <td style="text-align:center; font-weight:bold">${totals.absentDays}</td>
+                        <td style="text-align:center; font-weight:bold">${totals.sickLeaveDays}</td>
+                        <td style="text-align:center; font-weight:bold">${totals.annualLeaveDays}</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.totalDeductions)}</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.tasksAndRewards)}</td>
+                        <td style="text-align:right; font-weight:bold">${fmt(totals.netSalary)}</td>
+                    </tr>
+                </tfoot>`;
+
+                html += `</table>`;
+
+                document.getElementById("printTableContainer").innerHTML = html;
+
+                // auto print (small delay so DOM renders)
+                setTimeout(() => window.print(), 300);
+
+            } catch (e) {
+                console.error("print load error:", e);
+                document.getElementById("printTableContainer").innerHTML = "حدث خطأ أثناء تحميل البيانات";
+            }
+        }
+
+        loadPrintData();
+    </script>
+
+    <script>
+        // Razor variables
+        const employeeId = "@ViewBag.EmployeeId";
+        const month = "@ViewBag.Month";
+        const year = "@ViewBag.Year";
+
+        // Convert to number safely
+        const monthNumber = parseInt(month);
+
+        // Arabic month names
+        const monthNamesAr = [
+            "يناير","فبراير","مارس","أبريل","مايو","يونيو",
+            "يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"
+        ];
+
+        // Get month name (or empty string if invalid)
+        const monthName = monthNumber ? monthNamesAr[monthNumber - 1] : "";
+
+        console.log("EmployeeId:", employeeId);
+        console.log("Month (number):", monthNumber);
+        console.log("Month (name):", monthName);
+        console.log("Year:", year);
+    </script>
+
+
+
+</body>
+</html>

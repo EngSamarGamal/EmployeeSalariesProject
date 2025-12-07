@@ -1,0 +1,16 @@
+﻿<script>
+    function calcNet(e){
+        if(e.key === "Enter"){
+            e.preventDefault();
+
+            const basic = parseFloat(document.getElementById("basicSalary").value) || 0;
+            const allow = parseFloat(document.getElementById("allowances").value) || 0;
+
+            document.getElementById("netSalary").value = basic + allow;
+                   const workDaysEl = document.getElementById('workDays');
+    if (workDaysEl) {
+      workDaysEl.value = 30;
+    }
+        }
+    }
+</script>

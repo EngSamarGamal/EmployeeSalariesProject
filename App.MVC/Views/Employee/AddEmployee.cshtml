@@ -1,0 +1,223 @@
+﻿@using App.Common.Dtos.Models.API.Employees
+@model EmployeeDto
+<div class="container" dir="rtl" style="font-family: Tahoma, Arial, sans-serif;">
+
+
+    @Html.Partial("_HeaderStyle")
+
+    <div class="emp-head" dir="rtl">
+        <div class="center-text">
+            <div class="title">نظام إدارة بيانات نادي الفجر الثقافي</div>
+            <div class="subtitle">وحدة إدارة بيانات الموظفين</div>
+        </div>
+    </div>
+
+
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center" style="color:#b22222; margin:12px 0;">بيانات الموظف</h4>
+            <hr style="border-top:3px solid #d19; margin-top: -6px;">
+        </div>
+    </div>
+    <form asp-action="AddEmployee" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+        @if (TempData["ToastMessage"] != null)
+        {
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 99999;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @TempData["ToastMessage"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+        @section Scripts {
+            <partial name="_ValidationScriptsPartial" />
+        }
+    <!-- English comment: Employee number + Name (two inputs in one row) -->
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">رقم الموظف</label>
+            <input asp-for="EmployeeNumber" class="form-control" />
+            <span asp-validation-for="EmployeeNumber" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">الاسم</label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- English comment: dotted divider is assumed present in page style, no custom CSS added -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <!-- keep page's divider markup if exists; otherwise use empty row to separate -->
+        </div>
+    </div>
+
+    <!-- Single input rows (each uses full-width column) -->
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">رقم الهاتف</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">العنوان</label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">البريد الإلكتروني</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+        <!-- و الوظيفة ايضا
+
+           المفروض كنت اعمل الجنسيات ف جدول بس عملتها كدا اختصارا للوقت  -->
+        <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">الجنسية</label>
+                <select asp-for="Nationality" class="form-control">
+                    <option value="">اختر الجنسية</option>
+                    <option value="مصري">مصري</option>
+                    <option value="سعودي">سعودي</option>
+                    <option value="سوري">سوري</option>
+                    <option value="عراقي">عراقي</option>
+                    <option value="أردني">أردني</option>
+                    <option value="لبناني">لبناني</option>
+                    <option value="سوداني">سوداني</option>
+                    <option value="ليبي">ليبي</option>
+                    <option value="يمني">يمني</option>
+                    <option value="فلسطيني">فلسطيني</option>
+                    <option value="تونسي">تونسي</option>
+                    <option value="جزائري">جزائري</option>
+                    <option value="مغربي">مغربي</option>
+                    <option value="غير ذلك">غير ذلك</option>
+                </select>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">الوظيفة</label>
+                <select asp-for="JobTitle" class="form-control">
+                    <option value="">اختر الوظيفة</option>
+                    <option value="مدير">مدير</option>
+                    <option value="محاسب">محاسب</option>
+                    <option value="سكرتارية">سكرتارية</option>
+                    <option value="مشرف">مشرف</option>
+                    <option value="موظف موارد بشرية">موظف موارد بشرية</option>
+                    <option value="مسؤول مبيعات">مسؤول مبيعات</option>
+                    <option value="مندوب مشتريات">مندوب مشتريات</option>
+                    <option value="فني">فني</option>
+                    <option value="عامل">عامل</option>
+                    <option value="سائق">سائق</option>
+                    <option value="غير ذلك">غير ذلك</option>
+                </select>
+            <span asp-validation-for="JobTitle" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Passport number + expiry -->
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">رقم جواز السفر</label>
+            <input asp-for="PassportNumber" class="form-control" />
+            <span asp-validation-for="PassportNumber" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">تاريخ انتهاء الجواز</label>
+            <input asp-for="PassportExpiry" class="form-control" type="date" />
+            <span asp-validation-for="PassportExpiry" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- National ID number + expiry -->
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">رقم الهوية</label>
+            <input asp-for="NationalIdNumber" class="form-control" />
+            <span asp-validation-for="NationalIdNumber" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">تاريخ انتهاء الهوية</label>
+            <input asp-for="NationalIdExpiry" class="form-control" type="date" />
+            <span asp-validation-for="NationalIdExpiry" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Place of issue (single field) -->
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">مكان الاصدار</label>
+            <input asp-for="IdPlaceOfIssue" class="form-control" />
+            <span asp-validation-for="IdPlaceOfIssue" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Salary + Bank Account -->
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">قيمة الراتب</label>
+            <input asp-for="Salary" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Salary" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">رقم حساب البنك</label>
+            <input asp-for="BankAccountNumber" class="form-control" />
+            <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Bank name (single) -->
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">اسم البنك</label>
+            <input asp-for="BankName" class="form-control" />
+            <span asp-validation-for="BankName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">ملاحظات</label>
+            <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Photo upload -->
+    <div class="row mb-2">
+        <div class="col-md-12 mb-2">
+            <label class="form-label">صورة الموظف</label>
+                <input type="file" name="File" accept="image/*" class="form-control" />
+        </div>
+    </div>
+
+    <!-- Buttons row -->
+    <div class="row">
+        <div class="col-md-12 d-flex gap-2">
+            <button type="submit" class="btn btn-secondary">حفظ</button>
+        </div>
+    </div>
+</form>
+</div>

@@ -1,0 +1,14 @@
+﻿<script>
+            document.getElementById("btnPrintSalaries").addEventListener("click", function () {
+
+        const emp = employeeSelect.value || "";
+        const month = monthSelect.value || "";
+        const year = yearSelect.value || "";
+
+
+        const url = `/EmployeesSalary/PrintSalaries?employeeId=${encodeURIComponent(emp)}&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}`;
+
+        window.open(url, "_blank");
+    });
+
+</script>

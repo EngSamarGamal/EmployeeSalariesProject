@@ -1,0 +1,91 @@
+﻿<script>
+    // calcTotalSalary: basic + allowances -> netSalary
+    function calcNet(e) {
+      // allow either Enter key or any input event (some browsers don't send e.key)
+      if (e && e.key && e.key !== "Enter") return;
+
+      try {
+        const basic = parseFloat(document.getElementById("basicSalary")?.value) || 0;
+        const allowances = parseFloat(document.getElementById("allowances")?.value) || 0;
+        const netSalaryEl = document.getElementById("netSalary");
+
+        if (netSalaryEl) {
+          const total = basic + allowances;
+          netSalaryEl.value = total.toFixed(2);
+        }
+
+        // update final salary after changing total
+        updateFinalSalary();
+      } catch (err) {
+        console.error("calcNet error:", err);
+      }
+    }
+
+    // calcAbsentDays: compute deduction based on (basic + allowances) / 30 * absentDays
+    // (keeps your existing behavior but safe)
+    function calcAbsentDays(e) {
+      if (e && e.key && e.key !== "Enter") return;
+
+      try {
+        const basic = parseFloat(document.getElementById("basicSalary")?.value) || 0;
+        const allowances = parseFloat(document.getElementById("allowances")?.value) || 0;
+        const absent = parseFloat(document.getElementById("AbsentDays")?.value) || 0;
+        const totalDeductionsEl = document.getElementById("totalDeductions");
+
+        const totalSalary = basic + allowances;
+        const dayRate = totalSalary / 30;
+        const deduction = dayRate * absent;
+
+        if (totalDeductionsEl) {
+          totalDeductionsEl.value = deduction.toFixed(2);
+        }
+
+        // update final salary after changing deductions
+        updateFinalSalary();
+      } catch (err) {
+        console.error("calcAbsentDays error:", err);
+      }
+    }
+
+    // calcFinalSalary: called when tasks/m_rewards changed or explicitly via onkeydown
+    function calcFinalSalary(e) {
+      // if called from keydown, require Enter; if called programmatically, e may be undefined
+      if (e && e.key && e.key !== "Enter") return;
+
+      try {
+        updateFinalSalary();
+      } catch (err) {
+        console.error("calcFinalSalary error:", err);
+      }
+    }
+
+    // shared helper to compute final salary and write to FinalSalary field
+    function updateFinalSalary() {
+      const netSalary = parseFloat(document.getElementById("netSalary")?.value) || 0; // basic + allowances
+      const totalDeductions = parseFloat(document.getElementById("totalDeductions")?.value) || 0;
+      const tasks = parseFloat(document.getElementById("tasksAndRewards")?.value) || 0;
+      const finalEl = document.getElementById("FinalSalary");
+
+      const finalValue = netSalary - totalDeductions + tasks;
+      if (finalEl) finalEl.value = finalValue.toFixed(2);
+    }
+
+    // Optional: attach listeners safely if you prefer dynamic updates (uncomment to enable)
+    document.addEventListener("DOMContentLoaded", () => {
+      const allowancesEl = document.getElementById("allowances");
+      const absentEl = document.getElementById("AbsentDays");
+      const tasksEl = document.getElementById("tasksAndRewards");
+
+      // keep current onkeydown behavior but also update on input for better UX
+      if (allowancesEl) {
+        allowancesEl.addEventListener("input", calcNet);
+        // allowancesEl.addEventListener("keydown", calcNet); // not necessary if using input
+      }
+      if (absentEl) {
+        absentEl.addEventListener("input", calcAbsentDays);
+      }
+      if (tasksEl) {
+        tasksEl.addEventListener("input", calcFinalSalary);
+      }
+    });
+</script>

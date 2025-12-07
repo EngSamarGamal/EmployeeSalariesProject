@@ -1,0 +1,227 @@
+﻿<script>
+    (function () {
+        // Config
+        const employeesApi = "http://localhost:7037/api/Employee/GetAllEmp";
+        const salariesApi  = "http://localhost:7037/api/EmployeesSalary/GetAllEmpSalary";
+        const deleteSalaryApiBase = "http://localhost:7037/api/EmployeesSalary/Delete"; // DELETE?SalaryId=...
+
+        // State
+        let currentItems = [];
+        let currentPage = 1;
+        const pageSize = 10;
+
+        // DOM refs
+        const employeeSelect = document.getElementById("employeeSelect");
+        const monthSelect = document.getElementById("monthSelect");
+        const yearSelect = document.getElementById("yearSelect");
+        const gridContainer = document.getElementById("salaryGridContainer");
+        const btnSearch = document.getElementById("btnSearch");
+
+        // Basic guards
+        if (!employeeSelect || !monthSelect || !yearSelect || !gridContainer) {
+            console.error("Missing required DOM elements:", {
+                employeeSelect: !!employeeSelect,
+                monthSelect: !!monthSelect,
+                yearSelect: !!yearSelect,
+                gridContainer: !!gridContainer
+            });
+            return;
+        }
+
+        // Helpers
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return "";
+            return String(s)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        function numeric(v) {
+            const n = parseFloat(v);
+            return isNaN(n) ? "" : n.toFixed(2);
+        }
+
+        // Fill months & years (default "اختر")
+        (function fillMonthsYears() {
+            const months = ["اختر الشهر","يناير","فبراير","مارس","أبريل","مايو","يونيو",
+                            "يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+            monthSelect.innerHTML = months
+                .map((m, i) => i === 0 ? `<option value="">${m}</option>` : `<option value="${i}">${m}</option>`)
+                .join("");
+
+            const now = new Date();
+            let yearOptions = `<option value="">اختر السنة</option>`;
+            for (let y = now.getFullYear() - 5; y <= now.getFullYear() + 1; y++) {
+                yearOptions += `<option value="${y}">${y}</option>`;
+            }
+            yearSelect.innerHTML = yearOptions;
+        })();
+
+        // Load employees (returns the loaded list so caller can continue)
+        async function loadEmployees() {
+            employeeSelect.innerHTML = `<option value="">جاري التحميل...</option>`;
+            try {
+                const res = await fetch(employeesApi, { credentials: 'include' });
+                if (!res.ok) throw new Error("Network error " + res.status);
+                const json = await res.json();
+                const list = json?.result ?? json ?? [];
+
+                // Default option: empty value = "كل الموظفين" (يعني لو فضيت الحقل هنجيب الكل)
+                const opts = [`<option value="">كل الموظفين</option>`];
+                list.forEach(e => {
+                    const id = e.employeeId ?? e.id ?? "";
+                    const name = e.fullName ?? e.name ?? e.fullNameAr ?? "";
+                    opts.push(`<option value="${escapeHtml(id)}">${escapeHtml(name)}</option>`);
+                });
+                employeeSelect.innerHTML = opts.join("");
+                return list;
+            } catch (err) {
+                console.error("loadEmployees error", err);
+                employeeSelect.innerHTML = `<option value="">فشل تحميل الموظفين</option>`;
+                return [];
+            }
+        }
+
+        // Build query params (only include month/year/employeeId when non-empty)
+        function buildQueryParams(employeeId, month, year) {
+            const params = new URLSearchParams();
+            if (employeeId !== undefined && employeeId !== null && String(employeeId).trim() !== "") {
+                params.append("employeeId", employeeId);
+            }
+            if (month !== undefined && month !== null && String(month).trim() !== "") params.append("month", String(month));
+            if (year !== undefined && year !== null && String(year).trim() !== "") params.append("year", String(year));
+            return params.toString() ? "?" + params.toString() : "";
+        }
+
+        // Load salaries
+        async function loadSalaries(employeeId, month, year) {
+            gridContainer.innerHTML = `<div class="text-center p-3">جارِ التحميل...</div>`;
+            try {
+                // pass employeeId as-is; if it's empty string -> buildQueryParams won't include it => backend should return all employees
+                const qs = buildQueryParams(employeeId, month, year);
+                const url = salariesApi + qs;
+                const res = await fetch(url, { credentials: 'include' });
+                if (!res.ok) throw new Error('Network error ' + res.status);
+                const json = await res.json();
+                currentItems = json?.result ?? json ?? [];
+                currentPage = 1;
+                renderTable();
+            } catch (err) {
+                console.error("loadSalaries error", err);
+                gridContainer.innerHTML = `<div class="p-3 text-danger">حدث خطأ أثناء تحميل البيانات</div>`;
+            }
+        }
+
+        // Render table and attach handlers (unchanged)
+        function renderTable() {
+            const total = currentItems.length;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            const start = (currentPage - 1) * pageSize;
+            const pageItems = currentItems.slice(start, start + pageSize);
+
+            let html = `<div class="table-responsive"><table class="table table-bordered table-sm" style="font-size:13px;"><thead class="table-light"><tr>
+                <th>الاسم</th><th>الوظيفة</th><th>السنة / الشهر</th><th>الأساسي الشهري</th><th>البدلات</th><th>إجمالي الراتب</th>
+                <th>أيام العمل</th><th>أيام الغياب</th><th>المرضية</th><th>السنوية</th><th>مجموع الخصم</th><th>مهام ومكافآت</th><th>صافي الراتب</th><th>أدوات تحكم</th>
+            </tr></thead><tbody>`;
+
+            if (!pageItems.length) {
+                html += `<tr><td colspan="14" class="text-center">لا توجد بيانات</td></tr>`;
+            } else {
+                pageItems.forEach(s => {
+                    const name = s.employee?.fullName ?? s.employee?.fullNameAr ?? s.fullName ?? "";
+                    const job = s.employee?.jobTitle ?? s.job ?? "";
+                    const id = s.salaryId ?? s.SalaryId ?? s.salaryID ?? s.id ?? "";
+                    const net = (s.netSalary ?? ((s.totalSalary ?? s.TotalSalary ?? 0) - (s.totalDeductions ?? s.TotalDeductions ?? 0) + (s.tasksAndRewards ?? s.TasksAndRewards ?? 0)));
+
+                    html += `<tr>
+                        <td>${escapeHtml(name)}</td>
+                        <td>${escapeHtml(job)}</td>
+                        <td>${escapeHtml((s.year ?? s.Year ?? "") + " / " + (s.month ?? s.Month ?? ""))}</td>
+                        <td class="text-end">${numeric(s.basicSalary ?? s.BasicSalary)}</td>
+                        <td class="text-end">${numeric(s.allowances ?? s.Allowances)}</td>
+                        <td class="text-end">${numeric(s.totalSalary ?? s.TotalSalary)}</td>
+                        <td class="text-center">${escapeHtml(String(s.workDays ?? s.WorkDays ?? ""))}</td>
+                        <td class="text-center">${escapeHtml(String(s.absentDays ?? s.AbsentDays ?? 0))}</td>
+                        <td class="text-center">${escapeHtml(String(s.sickLeaveDays ?? s.SickLeaveDays ?? 0))}</td>
+                        <td class="text-center">${escapeHtml(String(s.annualLeaveDays ?? s.AnnualLeaveDays ?? 0))}</td>
+                        <td class="text-end">${numeric(s.totalDeductions ?? s.TotalDeductions)}</td>
+                        <td class="text-end">${numeric(s.tasksAndRewards ?? s.TasksAndRewards)}</td>
+                        <td class="text-end">${numeric(net)}</td>
+                        <td class="text-center">
+                           <button class="btn btn-sm btn-outline-primary me-1 btn-edit" data-id="${escapeHtml(id)}">✏️</button>
+                           <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${escapeHtml(id)}">🗑️</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+
+            // pagination
+            html += `<div class="d-flex justify-content-between align-items-center mt-2">
+                        <div>عرض ${total === 0 ? 0 : (start+1)} إلى ${Math.min(total, start+pageSize)} من ${total} سجل</div>
+                        <div>`;
+            for (let p = 1; p <= totalPages; p++) {
+                html += `<button class="btn btn-sm ${p === currentPage ? 'btn-primary' : 'btn-light'} mx-1" onclick="goToPage(${p})">${p}</button>`;
+            }
+            html += `</div></div>`;
+
+            gridContainer.innerHTML = html;
+
+            // edit handler
+            gridContainer.querySelectorAll(".btn-edit").forEach(b => b.addEventListener("click", () => {
+                const id = b.getAttribute("data-id");
+                if (!id) return alert("معرف السجل غير متوفر");
+        window.location.href = `/EmployeesSalary/EditSalaries?salaryId=${encodeURIComponent(id)}`;
+            }));
+
+            // delete handler
+            gridContainer.querySelectorAll(".btn-delete").forEach(b => b.addEventListener("click", async () => {
+                const id = b.getAttribute("data-id");
+                if (!id) return alert("معرف السجل غير متوفر");
+                if (!confirm("هل تريد حذف هذا السجل؟")) return;
+
+                try {
+                    const url = `${deleteSalaryApiBase}?SalaryId=${encodeURIComponent(id)}`;
+                    const resp = await fetch(url, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (resp.ok) {
+                        alert("تم حذف السجل بنجاح.");
+                        loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value);
+                    } else {
+                        const txt = await resp.text();
+                        alert("فشل الحذف: " + (txt || resp.statusText));
+                    }
+                } catch (err) {
+                    console.error("delete error", err);
+                    alert("حدث خطأ أثناء الحذف.");
+                }
+            }));
+        }
+
+        // pagination global function
+        window.goToPage = function (page) {
+            currentPage = page;
+            renderTable();
+        };
+
+        // events: change filters or click search
+        employeeSelect.addEventListener("change", () => loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value));
+        monthSelect.addEventListener("change", () => loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value));
+        yearSelect.addEventListener("change", () => loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value));
+        if (btnSearch) btnSearch.addEventListener("click", () => loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value));
+
+        (async function init() {
+            await loadEmployees();
+            // load all salaries initially (employeeSelect.value is "" => all employees)
+            loadSalaries(employeeSelect.value, monthSelect.value, yearSelect.value);
+        })();
+
+    })();
+</script>
