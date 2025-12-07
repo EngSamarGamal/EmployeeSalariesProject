@@ -27,6 +27,7 @@ namespace App.Application.Services.EmployeeSalariesService
 			CancellationToken ct = default);
 		Task<IResponseModel> DeleteSalary(Guid SalaryId, CancellationToken ct = default);
 		Task<IResponseModel> GetSalaryDetials(Guid SalaryId, CancellationToken ct = default);
+		Task<IResponseModel> EditAsync(CreateSalary dto, CancellationToken ct = default);
 
 	}
 }

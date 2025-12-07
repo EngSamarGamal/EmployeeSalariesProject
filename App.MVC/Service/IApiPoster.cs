@@ -10,6 +10,8 @@ namespace App.MVC.Interfaces
 		Task<IResponseModel> CreateEmp(string module, EmployeeDto model, CancellationToken ct = default);
 		Task<IResponseModel> CreateEmpSalaryAsync(string module, CreateSalary model, CancellationToken ct = default);
 		Task<IResponseModel> GetSalaryDetialsApi(Guid SalaryId, CancellationToken ct = default);
+		Task<IResponseModel> EditEmpSalaryAsync(string module, CreateSalary model, CancellationToken ct = default);
 
 	}
 }
+

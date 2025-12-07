@@ -22,6 +22,12 @@ namespace App.Dashboard.api.Controllers.EmployeesSalary
 			var response = await _employeeSalaryService.CreateAsync(dto, ct);
 			return Ok(response);
 		}
+		[HttpPut]
+		public async Task<IActionResult> Edit(CreateSalary dto, CancellationToken ct)
+		{
+			var response = await _employeeSalaryService.EditAsync(dto, ct);
+			return Ok(response);
+		}
 		[HttpGet("GetAllEmpSalary")]
 		public async Task<IActionResult> GetAllEmpSalary(Guid? employeeId = null, int? month = null, int? year = null, CancellationToken ct = default)
 		{

@@ -113,7 +113,6 @@ namespace App.MVC.Service
 			}
 		}
 
-		// 2) New method: send JSON to EmployeesSalary endpoint
 		public async Task<IResponseModel> CreateEmpSalaryAsync(string module, CreateSalary model, CancellationToken ct = default)
 		{
 			string url = _baseUrl + module; // e.g. http://localhost:7037/api/EmployeesSalary
@@ -174,6 +173,68 @@ namespace App.MVC.Service
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Unexpected error posting to {Module}", module);
+				return ResponseModel.Error("Unexpected error: " + ex.Message);
+			}
+		}
+
+		public async Task<IResponseModel> EditEmpSalaryAsync(string module, CreateSalary model, CancellationToken ct = default)
+		{
+			string url = _baseUrl.TrimEnd('/') + "/" + module.TrimStart('/');
+			_logger.LogInformation("PUT {Url}", url);
+
+			try
+			{
+				var client = _httpFactory.CreateClient();
+
+				var options = new JsonSerializerOptions
+				{
+					PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+					PropertyNameCaseInsensitive = true
+				};
+
+				var payload = JsonSerializer.Serialize(model, options);
+				using var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+				using var response = await client.PutAsync(url, content, ct);
+				var respText = await response.Content.ReadAsStringAsync(ct);
+
+				if (response.IsSuccessStatusCode)
+				{
+					try
+					{
+						var apiResp = JsonSerializer.Deserialize<ApiResponse>(respText, options);
+						return ResponseModel.Success(apiResp?.Message ?? "تم تعديل راتب الموظف بنجاح");
+					}
+					catch
+					{
+						return ResponseModel.Success(string.IsNullOrWhiteSpace(respText) ? "تم تعديل راتب الموظف بنجاح" : respText);
+					}
+				}
+				else
+				{
+					try
+					{
+						var apiResp = JsonSerializer.Deserialize<ApiResponse>(respText, options);
+						return ResponseModel.Error(apiResp?.Message ?? $"API returned {(int)response.StatusCode} {response.ReasonPhrase}");
+					}
+					catch
+					{
+						return ResponseModel.Error($"API returned {(int)response.StatusCode} {response.ReasonPhrase}: {respText}");
+					}
+				}
+			}
+			catch (HttpRequestException ex)
+			{
+				_logger.LogError(ex, "HttpRequestException putting to {Module}", module);
+				return ResponseModel.Error($"Cannot connect to API. ({ex.Message})");
+			}
+			catch (TaskCanceledException)
+			{
+				return ResponseModel.Error("Request timed out while contacting API.");
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Unexpected error putting to {Module}", module);
 				return ResponseModel.Error("Unexpected error: " + ex.Message);
 			}
 		}
